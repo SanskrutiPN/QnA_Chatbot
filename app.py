@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from llama_index.core import (
     VectorStoreIndex,
     SimpleDirectoryReader,
@@ -12,54 +13,40 @@ from llama_index.core.node_parser import SentenceSplitter
 st.set_page_config(
     page_title="VIT Admission Assistant",
     page_icon="🎓",
-    layout="centered"   # 🔥 FIXED (not wide)
+    layout="centered"
 )
 
 # ---------------- CLEAN MODERN CSS ----------------
 st.markdown("""
 <style>
-
 .block-container {
     padding-top: 2rem;
     padding-bottom: 6rem;
     max-width: 900px;
     margin: auto;
 }
-
-/* Title */
 .main-title {
     text-align: center;
     font-size: 44px;
     font-weight: 700;
     margin-bottom: 10px;
 }
-
 .subtitle {
     text-align: center;
     color: #9CA3AF;
     font-size: 16px;
     margin-bottom: 30px;
 }
-
-/* Divider */
 .divider {
     border-top: 1px solid #2c2f36;
     margin: 25px 0 35px 0;
 }
-
-/* Chat Container */
-.chat-container {
-    width: 100%;
-}
-
-/* Chat Row */
+.chat-container { width: 100%; }
 .chat-row {
     display: flex;
     align-items: flex-start;
     margin-bottom: 20px;
 }
-
-/* Avatar */
 .avatar {
     width: 36px;
     height: 36px;
@@ -70,20 +57,14 @@ st.markdown("""
     margin-right: 12px;
     font-size: 18px;
 }
-
-/* User Avatar */
 .user-avatar {
     background-color: #ff4b4b;
     color: white;
 }
-
-/* Bot Avatar */
 .bot-avatar {
     background-color: #f59e0b;
     color: black;
 }
-
-/* Message Bubble */
 .message {
     background-color: #1f2937;
     padding: 16px 20px;
@@ -92,8 +73,6 @@ st.markdown("""
     line-height: 1.6;
     width: 100%;
 }
-
-/* Fixed Input */
 .input-wrapper {
     position: fixed;
     bottom: 20px;
@@ -102,17 +81,12 @@ st.markdown("""
     display: flex;
     justify-content: center;
 }
-
-.input-box {
-    width: 900px;
-}
-
+.input-box { width: 900px; }
 .stTextInput > div > div > input {
     height: 55px;
     border-radius: 14px;
     font-size: 16px;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -125,12 +99,22 @@ st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 @st.cache_resource
 def load_rag():
 
+    # 🔥 Embedding model
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
+    # 🔥 Get Groq API key from Streamlit Secrets
+    groq_api_key = os.environ.get("GROQ_API_KEY")
+
+    if not groq_api_key:
+        st.error("❌ GROQ_API_KEY not found. Please add it in Streamlit Cloud Secrets.")
+        st.stop()
+
+    # 🔥 Explicitly pass API key
     Settings.llm = Groq(
         model="llama-3.1-8b-instant",
+        api_key=groq_api_key,
         temperature=0,
         max_tokens=512
     )
@@ -183,7 +167,6 @@ def send_message():
 st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
 
 for msg in st.session_state.messages:
-
     if msg["role"] == "user":
         st.markdown(f"""
         <div class="chat-row">
@@ -191,7 +174,6 @@ for msg in st.session_state.messages:
             <div class="message">{msg['content']}</div>
         </div>
         """, unsafe_allow_html=True)
-
     else:
         st.markdown(f"""
         <div class="chat-row">
@@ -202,7 +184,7 @@ for msg in st.session_state.messages:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------------- FIXED CENTERED INPUT ----------------
+# ---------------- INPUT ----------------
 st.markdown("<div class='input-wrapper'>", unsafe_allow_html=True)
 st.markdown("<div class='input-box'>", unsafe_allow_html=True)
 
