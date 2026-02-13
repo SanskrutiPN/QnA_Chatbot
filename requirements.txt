@@ -1,0 +1,21 @@
+# streamlit
+# llama-index
+# llama-index-llms-ollama
+# llama-index-embeddings-huggingface
+# sentence-transformers
+# # pypdf
+
+# streamlit
+# llama-index
+# llama-index-llms-ollama
+# llama-index-embeddings-ollama
+# pypdf
+
+
+llama-index
+llama-index-llms-groq
+llama-index-embeddings-huggingface
+llama-index-readers-file
+sentence-transformers
+streamlit
+pypdf
