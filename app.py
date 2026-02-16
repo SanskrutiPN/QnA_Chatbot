@@ -99,19 +99,19 @@ st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 @st.cache_resource
 def load_rag():
 
-    # 🔥 Embedding model
+
     Settings.embed_model = HuggingFaceEmbedding(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    # 🔥 Get Groq API key from Streamlit Secrets
+   
     groq_api_key = os.environ.get("GROQ_API_KEY")
 
     if not groq_api_key:
         st.error("❌ GROQ_API_KEY not found. Please add it in Streamlit Cloud Secrets.")
         st.stop()
 
-    # 🔥 Explicitly pass API key
+
     Settings.llm = Groq(
         model="llama-3.1-8b-instant",
         api_key=groq_api_key,
